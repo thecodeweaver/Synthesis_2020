@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import javax.swing.plaf.basic.BasicTreeUI.TreeSelectionHandler;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,6 +24,11 @@ public class Robot extends TimedRobot {
   private Joystick m_leftStick;
   private Joystick m_rightStick;
   private Timer m_timer = new Timer();
+
+  // Variables for the auto
+  private double trenchRunLength = 2.25;
+  private double trenchRunReturnStart = trenchRunLength + 2;
+  private double trenchRunReturnEnd = trenchRunLength + trenchRunReturnStart;
 
   @Override
   public void robotInit() {
@@ -43,9 +50,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    if (m_timer.get() < 2.0) {
-      m_myRobot.arcadeDrive(0.5, 0.0);
-    } else {
+    // A simple auto to pick up power cells from the trench run and shoot them into the power port
+
+    if (m_timer.get() < trenchRunLength) {
+      m_myRobot.arcadeDrive(0.3, 0.0);
+    } else if (m_timer.get() > trenchRunReturnStart && m_timer.get() < trenchRunReturnEnd) {
+      m_myRobot.arcadeDrive(-0.3, 0.0);
+    } else if (m_timer.get() > trenchRunReturnEnd) {
       m_myRobot.stopMotor();
     }
   }
